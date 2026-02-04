@@ -48,6 +48,7 @@ Copy these new files to your FleetCart installation:
 | `modules/Payment/Responses/MoniqResponse.php` | `modules/Payment/Responses/MoniqResponse.php` |
 | `modules/Payment/Http/Controllers/MoniqWebhookController.php` | `modules/Payment/Http/Controllers/MoniqWebhookController.php` |
 | `modules/Setting/Resources/views/admin/settings/tabs/moniq.blade.php` | `modules/Setting/Resources/views/admin/settings/tabs/moniq.blade.php` |
+| `modules/Setting/Resources/assets/admin/js/main.js` | `modules/Setting/Resources/assets/admin/js/main.js` |
 
 #### Step 2: Replace Modified Files
 
@@ -62,13 +63,23 @@ Copy these new files to your FleetCart installation:
 | `modules/Setting/Resources/lang/en/attributes.php` | `modules/Setting/Resources/lang/en/attributes.php` |
 | `modules/Setting/Resources/lang/en/settings.php` | `modules/Setting/Resources/lang/en/settings.php` |
 | `modules/Setting/Http/Requests/UpdateSettingRequest.php` | `modules/Setting/Http/Requests/UpdateSettingRequest.php` |
+| `modules/Setting/Resources/assets/admin/js/main.js` | `modules/Setting/Resources/assets/admin/js/main.js` |
 
-#### Step 3: Clear Cache
+#### Step 3: Rebuild Assets
 
-After copying files, clear the Laravel cache:
+Since the JavaScript file is modified, you need to rebuild assets:
 
 ```bash
 cd /path/to/fleetcart
+yarn build
+# or: npm run build
+```
+
+#### Step 4: Clear Cache
+
+Clear the Laravel cache:
+
+```bash
 php artisan cache:clear
 php artisan config:clear
 php artisan view:clear
@@ -125,6 +136,10 @@ modules/
     │   └── Requests/
     │       └── UpdateSettingRequest.php # Validation rules (modified)
     └── Resources/
+        ├── assets/
+        │   └── admin/
+        │       └── js/
+        │           └── main.js          # JS toggle handler (modified)
         ├── lang/
         │   └── en/
         │       ├── attributes.php       # Field labels (modified)

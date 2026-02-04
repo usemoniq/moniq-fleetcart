@@ -78,6 +78,7 @@ backup_file "modules/Setting/Admin/SettingTabs.php"
 backup_file "modules/Setting/Resources/lang/en/attributes.php"
 backup_file "modules/Setting/Resources/lang/en/settings.php"
 backup_file "modules/Setting/Http/Requests/UpdateSettingRequest.php"
+backup_file "modules/Setting/Resources/assets/admin/js/main.js"
 
 echo ""
 echo -e "${YELLOW}Step 2: Creating directories...${NC}"
@@ -86,6 +87,7 @@ mkdir -p "$FLEETCART_PATH/modules/Payment/Libraries/Moniq"
 mkdir -p "$FLEETCART_PATH/modules/Payment/Gateways"
 mkdir -p "$FLEETCART_PATH/modules/Payment/Responses"
 mkdir -p "$FLEETCART_PATH/modules/Payment/Http/Controllers"
+mkdir -p "$FLEETCART_PATH/modules/Setting/Resources/assets/admin/js"
 echo -e "  Directories created"
 
 echo ""
@@ -109,9 +111,27 @@ copy_file "modules/Setting/Admin/SettingTabs.php"
 copy_file "modules/Setting/Resources/lang/en/attributes.php"
 copy_file "modules/Setting/Resources/lang/en/settings.php"
 copy_file "modules/Setting/Http/Requests/UpdateSettingRequest.php"
+copy_file "modules/Setting/Resources/assets/admin/js/main.js"
 
 echo ""
-echo -e "${YELLOW}Step 5: Clearing cache...${NC}"
+echo -e "${YELLOW}Step 5: Rebuilding assets...${NC}"
+if command -v yarn &> /dev/null || command -v npm &> /dev/null; then
+    cd "$FLEETCART_PATH"
+    if [ -f "package.json" ]; then
+        if command -v yarn &> /dev/null; then
+            yarn build 2>/dev/null || echo -e "  ${YELLOW}Warning: Could not rebuild assets with yarn${NC}"
+        else
+            npm run build 2>/dev/null || echo -e "  ${YELLOW}Warning: Could not rebuild assets with npm${NC}"
+        fi
+        echo -e "  Assets rebuilt"
+    fi
+else
+    echo -e "  ${YELLOW}Warning: yarn/npm not found. Please rebuild assets manually:${NC}"
+    echo "  cd $FLEETCART_PATH && yarn build"
+fi
+
+echo ""
+echo -e "${YELLOW}Step 6: Clearing cache...${NC}"
 
 cd "$FLEETCART_PATH"
 

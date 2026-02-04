@@ -61,9 +61,20 @@ restore_file "modules/Setting/Admin/SettingTabs.php"
 restore_file "modules/Setting/Resources/lang/en/attributes.php"
 restore_file "modules/Setting/Resources/lang/en/settings.php"
 restore_file "modules/Setting/Http/Requests/UpdateSettingRequest.php"
+restore_file "modules/Setting/Resources/assets/admin/js/main.js"
 
 echo ""
-echo -e "${YELLOW}Step 3: Clearing cache...${NC}"
+echo -e "${YELLOW}Step 3: Rebuilding assets...${NC}"
+cd "$FLEETCART_PATH"
+if command -v yarn &> /dev/null; then
+    yarn build 2>/dev/null || true
+elif command -v npm &> /dev/null; then
+    npm run build 2>/dev/null || true
+fi
+echo -e "  Assets rebuilt"
+
+echo ""
+echo -e "${YELLOW}Step 4: Clearing cache...${NC}"
 
 cd "$FLEETCART_PATH"
 php artisan cache:clear 2>/dev/null || true
