@@ -150,6 +150,7 @@ return [
     'translatable.moniq_description' => 'Description',
     'moniq_public_key' => 'Public Key',
     'moniq_api_secret' => 'API Secret',
+    'moniq_enable_chat' => 'Enable Chat Widget',
 
     'razorpay_enabled' => 'Status',
     'translatable.razorpay_label' => 'Label',

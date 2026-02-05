@@ -8,5 +8,14 @@
             {{ Form::text('moniq_public_key', trans('setting::attributes.moniq_public_key'), $errors, $settings, ['required' => true]) }}
             {{ Form::password('moniq_api_secret', trans('setting::attributes.moniq_api_secret'), $errors, $settings, ['required' => true]) }}
         </div>
+
+        <hr class="my-4">
+
+        <h4 class="mb-3">{{ trans('setting::settings.form.komposa_chat_section') }}</h4>
+        {{ Form::checkbox('moniq_enable_chat', trans('setting::attributes.moniq_enable_chat'), trans('setting::settings.form.enable_komposa_chat'), $errors, $settings) }}
+
+        <p class="help-text text-muted mt-2">
+            {{ trans('setting::settings.form.komposa_chat_help') }}
+        </p>
     </div>
 </div>
