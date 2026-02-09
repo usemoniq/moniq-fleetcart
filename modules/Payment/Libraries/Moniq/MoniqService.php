@@ -50,11 +50,12 @@ class MoniqService
         $token = $this->getToken();
 
         $orderLines = [];
-        foreach ($order->products as $product) {
+
+        foreach ($order->products as $orderProduct) {
             $orderLines[] = [
-                'itemName' => $product->name,
-                'quantity' => (int) $product->pivot->qty,
-                'amount' => (float) $product->pivot->unit_price->convertToCurrentCurrency()->amount(),
+                'itemName' => $orderProduct->product?->name ?? 'Item',
+                'quantity' => (int) $orderProduct->qty,
+                'amount' => (float) $orderProduct->unit_price,
             ];
         }
 
