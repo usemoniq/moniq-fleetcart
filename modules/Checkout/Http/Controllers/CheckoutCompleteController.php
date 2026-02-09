@@ -148,7 +148,7 @@ class CheckoutCompleteController
                 $moniq = new MoniqService($moniqConfig);
 
                 // Get stored API order ID from order notes
-                $notes = json_decode($order->notes ?? '{}', true);
+                $notes = json_decode($order->note ?? '{}', true);
                 $apiOrderId = $notes['moniq_order_id'] ?? null;
 
                 if ($apiOrderId) {

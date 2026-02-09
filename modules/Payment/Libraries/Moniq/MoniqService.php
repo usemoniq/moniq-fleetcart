@@ -55,25 +55,88 @@ class MoniqService
             $orderLines[] = [
                 'itemName' => $orderProduct->product?->name ?? 'Item',
                 'quantity' => (int) $orderProduct->qty,
-                'amount' => (float) $orderProduct->unit_price,
+                'amount' => round(
+                    (float) $orderProduct->unit_price->amount(),
+                    2
+                ),
             ];
         }
 
+        /*
+     |------------------------------------------------------------
+     | Other fields available on $orderProduct (order_products)
+     |------------------------------------------------------------
+     | $orderProduct->id
+     | $orderProduct->order_id
+     | $orderProduct->product_id
+     | $orderProduct->product_variant_id
+     | $orderProduct->unit_price        // decimal string
+     | $orderProduct->qty               // quantity ordered
+     | $orderProduct->line_total        // unit_price * qty
+     |
+     |------------------------------------------------------------
+     | Related models you already have loaded
+     |------------------------------------------------------------
+     | $orderProduct->product
+     |   - id
+     |   - sku
+     |   - price
+     |   - selling_price
+     |   - special_price
+     |   - is_virtual
+     |   - is_active
+     |   - name            // translated attribute
+     |
+     | $orderProduct->product_variant (nullable)
+     |   - id
+     |   - name
+     |   - sku
+     |   - price
+     |
+     | $orderProduct->options      // Collection
+     | $orderProduct->variations   // Collection
+     |
+     |------------------------------------------------------------
+     | Useful derived values
+     |------------------------------------------------------------
+     | ($orderProduct->unit_price * $orderProduct->qty) === line_total
+     |------------------------------------------------------------
+     */
+
         $payload = [
+            // Order currency (orders.currency)
             'currency' => $order->currency,
+
+            // Customer contact
             'email' => $order->customer_email,
             'phone' => $order->customer_phone ?? '',
-            'customerName' => $order->customer_full_name,
-            'narration' => 'Order #' . $order->id . ' from ' . setting('store_name'),
+
+            // Customer name (derived, not a column)
+            'customerName' => trim(
+                ($order->customer_first_name ?? '') . ' ' . ($order->customer_last_name ?? '')
+            ),
+
+            // Display text for the transaction
+            'narration' => 'Order #' . $order->id . ' from ' . (setting('store_name') ?? 'Store'),
+
+            // Unique transaction references
             'transactionRef' => 'FC-' . $order->id . '-' . time(),
             'referenceKey' => 'order_' . $order->id,
+
+            // Redirect after payment
             'redirectUrl' => $redirectUrl,
+
+            // Line items (built from OrderProduct)
             'orderLines' => $orderLines,
+
+            // Arbitrary metadata (string-safe values)
             'metadata' => [
-                'order_id' => (string) $order->id,
-                'store_name' => setting('store_name'),
+                'order_id'   => (string) $order->id,
+                'store_name' => (string) (setting('store_name') ?? 'Store'),
+                'order_total'=> (string) $order->total,
             ],
         ];
+
 
         // Add customer address if available
         if ($order->billing_address_1) {

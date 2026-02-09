@@ -204,7 +204,7 @@ Cache::put('moniq_jwt_token', $token, 3000);
 
 ### Order ID Storage
 
-The Moniq order ID is stored in the order's `notes` field as JSON:
+The Moniq order ID is stored in the order's `note` field as JSON:
 
 ```json
 {
@@ -465,7 +465,7 @@ modules/
 **Solution**:
 - Check Laravel logs: `storage/logs/laravel.log`
 - Look for "Moniq callback error" messages
-- Verify the order's `notes` field contains `moniq_order_id`
+- Verify the order's `note` field contains `moniq_order_id`
 
 #### 3. Redirect Loop or Blank Page
 

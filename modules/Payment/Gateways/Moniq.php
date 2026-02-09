@@ -35,9 +35,9 @@ class Moniq implements GatewayInterface
         // Store API order ID in order for later verification
         $moniqOrderId = $response['result']['order']['id'] ?? null;
         if ($moniqOrderId) {
-            $existingNotes = json_decode($order->notes ?? '{}', true);
+            $existingNotes = json_decode($order->note ?? '{}', true);
             $existingNotes['moniq_order_id'] = $moniqOrderId;
-            $order->update(['notes' => json_encode($existingNotes)]);
+            $order->update(['note' => json_encode($existingNotes)]);
         }
 
         return new MoniqResponse($order, $response);
