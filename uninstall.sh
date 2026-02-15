@@ -65,7 +65,19 @@ restore_file "modules/Setting/Http/Requests/UpdateSettingRequest.php"
 restore_file "modules/Setting/Resources/assets/admin/js/main.js"
 
 echo ""
-echo -e "${YELLOW}Step 3: Rebuilding assets...${NC}"
+echo -e "${YELLOW}Step 3: Removing chat widget from storefront layout...${NC}"
+
+LAYOUT_FILE="$FLEETCART_PATH/modules/Storefront/Resources/views/public/layout.blade.php"
+if [ -f "$LAYOUT_FILE" ] && grep -q "komposa_chat" "$LAYOUT_FILE"; then
+    sed -i.bak '/komposa_chat/d' "$LAYOUT_FILE"
+    rm -f "${LAYOUT_FILE}.bak"
+    echo -e "  Chat widget removed from layout.blade.php"
+else
+    echo -e "  Chat widget not found in layout (already removed)"
+fi
+
+echo ""
+echo -e "${YELLOW}Step 4: Rebuilding assets...${NC}"
 cd "$FLEETCART_PATH"
 if command -v yarn &> /dev/null; then
     yarn build 2>/dev/null || true
@@ -75,7 +87,7 @@ fi
 echo -e "  Assets rebuilt"
 
 echo ""
-echo -e "${YELLOW}Step 4: Clearing cache...${NC}"
+echo -e "${YELLOW}Step 5: Clearing cache...${NC}"
 
 cd "$FLEETCART_PATH"
 php artisan cache:clear 2>/dev/null || true
@@ -91,6 +103,3 @@ echo -e "${GREEN}========================================${NC}"
 echo ""
 echo "Moniq payment gateway has been removed."
 echo "Original files have been restored from backup."
-echo ""
-echo -e "${YELLOW}Note: If you added the chat widget to layout.blade.php, please remove this line:${NC}"
-echo "   @include('storefront::public.layouts.komposa_chat')"

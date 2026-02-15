@@ -79,6 +79,7 @@ backup_file "modules/Setting/Resources/lang/en/attributes.php"
 backup_file "modules/Setting/Resources/lang/en/settings.php"
 backup_file "modules/Setting/Http/Requests/UpdateSettingRequest.php"
 backup_file "modules/Setting/Resources/assets/admin/js/main.js"
+backup_file "modules/Storefront/Resources/views/public/layout.blade.php"
 
 echo ""
 echo -e "${YELLOW}Step 2: Creating directories...${NC}"
@@ -116,7 +117,26 @@ copy_file "modules/Setting/Http/Requests/UpdateSettingRequest.php"
 copy_file "modules/Setting/Resources/assets/admin/js/main.js"
 
 echo ""
-echo -e "${YELLOW}Step 5: Rebuilding assets...${NC}"
+echo -e "${YELLOW}Step 5: Injecting chat widget into storefront layout...${NC}"
+
+LAYOUT_FILE="$FLEETCART_PATH/modules/Storefront/Resources/views/public/layout.blade.php"
+CHAT_INCLUDE="    @include('storefront::public.layouts.komposa_chat')"
+
+if [ -f "$LAYOUT_FILE" ]; then
+    if grep -q "komposa_chat" "$LAYOUT_FILE"; then
+        echo -e "  Chat widget already present in layout"
+    else
+        # Insert the chat include before </body>
+        sed -i.bak "s|</body>|${CHAT_INCLUDE}\n    </body>|" "$LAYOUT_FILE"
+        rm -f "${LAYOUT_FILE}.bak"
+        echo -e "  Chat widget injected into layout.blade.php"
+    fi
+else
+    echo -e "  ${YELLOW}Warning: layout.blade.php not found. You may need to add the chat widget manually.${NC}"
+fi
+
+echo ""
+echo -e "${YELLOW}Step 6: Rebuilding assets...${NC}"
 if command -v yarn &> /dev/null || command -v npm &> /dev/null; then
     cd "$FLEETCART_PATH"
     if [ -f "package.json" ]; then
@@ -133,7 +153,7 @@ else
 fi
 
 echo ""
-echo -e "${YELLOW}Step 6: Clearing cache...${NC}"
+echo -e "${YELLOW}Step 7: Clearing cache...${NC}"
 
 cd "$FLEETCART_PATH"
 
@@ -164,9 +184,6 @@ echo "2. Go to Settings → Payment Methods → Moniq"
 echo "3. Enable the gateway and enter your API credentials"
 echo "4. (Optional) Enable Komposa AI Chat widget in the same settings page"
 echo "5. Save settings"
-echo ""
-echo -e "${YELLOW}To enable chat widget, add this to your layout.blade.php before </body>:${NC}"
-echo "   @include('storefront::public.layouts.komposa_chat')"
 echo ""
 echo -e "Webhook URL: ${GREEN}https://your-domain.com/moniq/webhook${NC}"
 echo ""
